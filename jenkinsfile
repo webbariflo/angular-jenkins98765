@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    
+    environment {
+    
+    PATH = "C:/Program Files/nodejs"
+}
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: '27d786be-2dc9-480c-9e2e-ffffaab3af25', url: 'git@github.com:webbariflolabs/angular-iot22.git']]])
+
+            }
+        }
+
+        stage('NPM Setup') {
+            steps {   
+                  nodejs 'npm install'                
+                 }
+        }
+
+        stage('Build') {
+            steps {
+                nodejs 'npm run ng -- build'
+
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build successful! Artifacts ready for deployment.'
+        }
+        failure {
+            echo 'Build failed. Check logs for details.'
+        }
+    }
+}
